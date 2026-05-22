@@ -10,7 +10,7 @@ export default function Home() {
         <div className="shrink-0">
           <Image 
             src="/JaceBos1_1.jpg"
-            alt="Picture of Jace in Boston"
+            alt="Picture of Jace in Boston on the Charles River"
             width={300}
             height={10} 
             loading="eager"
@@ -20,16 +20,16 @@ export default function Home() {
 
         <div className="md:text-left">
           <p className="text-md">
-            Hello! My name is <b>Jace</b> and I am a curent student at CMU pursuing a B.S. in Computer Science. 
+            Hello! My name is <b>Jace</b> and I am a current student at CMU pursuing a B.S. in Computer Science. 
           </p>
           <p className="text-md mt-3">
-            At CMU, I have been in the acapella group <a href="https://cmucsharp.com/">C#</a> since my freshman year and am currently the President of the group! 
+            At CMU, I have been in the a cappella group <a href="https://cmucsharp.com/">C#</a> since my freshman year and am currently the President of the group! 
             I also am a TA for <a href="https://www.andrew.cmu.edu/course/18-330/">15-330 Introduction to Computer Security</a>. As well as a load of coursework, I have also
             done multiple research projects as an undergrad involving topics like compilation and succinct proof systems.
           </p>
           <p className="text-md mt-3">
             My current academic interests cover low-level computer systems programming/design and computer security (specifically regarding cryptosystems and verifiable programming languages). 
-            I have also recently become interested in comptitive programming and continue to build on my current algorithmic skills.
+            I have also recently become interested in competitive programming and continue to build on my current algorithmic skills.
           </p>
           <p className="text-md mt-3">
             I'm still figuring out my interests so hopefully this website gets across who I am and what I enjoy doing. I hope this site serves as a resource for anyone sharing similar passions to my own as well :).
@@ -41,8 +41,8 @@ export default function Home() {
       </div>
       <h1 className="text-2xl mt-6">Some Fun Facts:</h1>
       <p className="text-md mt-3">
-        I am an avid runner and love to go on hikes. One of my dreams is to do a "through hike" of the <a href="https://appalachiantrail.org/">Applaician Trail</a>. I also play a variety of instruments like guitar, saxophone, piano, and clarinet. 
-        I also sing a good amount (currently in C# I am part of our choral branch as a Tenor) and <a href="https://musescore.com/user/32764724">arrange</a> a small amount of music :). My favorite study spot at CMU is the 3rd floor Scott Hall cooridor.
+        I am an avid runner and love to go on hikes. One of my dreams is to do a "through hike" of the <a href="https://appalachiantrail.org/">Appalachian Trail</a>. I also play a variety of instruments like guitar, saxophone, piano, and clarinet. 
+        I also sing a good amount (currently in C# I am part of our choral branch as a Tenor) and <a href="https://musescore.com/user/32764724">arrange</a> a small amount of music :). My favorite study spot at CMU is the 3rd floor Scott Hall corridor.
       </p>
       <p className="text-md mt-3">
         I have lived in Western PA for my entire life! I love the atmosphere of the Fall season in PA, but I would love to extend myself and travel to see more of the world than just PA.

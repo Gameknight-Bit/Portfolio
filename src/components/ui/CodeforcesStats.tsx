@@ -30,10 +30,9 @@ export default async function CodeforcesStats({ handle }: CodeforcesStatsProps) 
 
   try {
     // Fetch data directly on the server. 
-    // next: { revalidate: 3600 } caches the stats for 1 hour (3600 seconds)
     const response = await fetch(
       `https://codeforces.com/api/user.info?handles=${handle}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 1800 } } //Cache for 30 mins
     );
 
     const data: CodeforcesApiResponse = await response.json();

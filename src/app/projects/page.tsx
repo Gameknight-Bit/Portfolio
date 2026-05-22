@@ -53,7 +53,7 @@ const WIP_PROJ_DATA = [
   {
     title: "Game of Life - SNES ROM",
     duration: "Dec 2025 - Present",
-    description: "Developing a game for the Super Nintendo Entertainment System using orignal hardware assembly in order to simulate John Conway's creation of the 'game of life'",
+    description: "Developing a game for the Super Nintendo Entertainment System using original hardware assembly in order to simulate John Conway's creation of the 'game of life'",
     imageUrl: "/CMU6.jpg", 
     slug: "gol_snes",
     http: "",
@@ -62,7 +62,7 @@ const WIP_PROJ_DATA = [
   {
     title: "Post Quantum Cryptosystems",
     duration: "Mar 2026 - Present",
-    description: "Implementing and exploring differnt post quantum cryptoschemes (Like learning with errors, merkle-hellman, etc.)",
+    description: "Implementing and exploring different post quantum cryptoschemes (Like learning with errors, merkle-hellman, etc.)",
     imageUrl: "/CMU1.jpg", 
     slug: "pqc",
     http: "",
