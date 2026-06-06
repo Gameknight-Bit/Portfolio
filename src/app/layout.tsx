@@ -27,7 +27,7 @@ export default function RootLayout({
         <Navbar />
 
         {/* This {children} variable represents whatever page you are currently on */}
-        <div className="max-w-5xl mx-auto min-h-[80vh]">
+        <div className="max-w-5xl mx-auto min-h-[80vh] px-4">
           {children} 
         </div>
 

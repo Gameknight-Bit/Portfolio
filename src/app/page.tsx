@@ -3,7 +3,7 @@ import CodeforcesStats from "@/components/ui/CodeforcesStats"; // Import the wid
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex-col p-15 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-in-out">
+    <main className="min-h-screen flex-col py-15 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-in-out">
       <h1 className="text-4xl"><b>Jace</b> Parks</h1>
       <p className="mt-4 text-md pb-2">Current CS Student at <a href="https://www.cmu.edu/">Carnegie Mellon University</a></p>
       <div className="flex flex-col md:flex-row gap-4 max-w-4xl">
