@@ -88,7 +88,7 @@ export default function ProjectsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {PROJECTS_DATA.map((project) => (
           <ProjectCard 
-            key={project.slug} 
+            key={project.title} 
             title={project.title}
             duration={project.duration}
             description={project.description}
@@ -109,7 +109,7 @@ export default function ProjectsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {WIP_PROJ_DATA.map((project) => (
           <ProjectCard 
-            key={project.slug} 
+            key={project.title} 
             title={project.title}
             duration={project.duration}
             description={project.description}

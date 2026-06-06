@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { PROJECT_POSTS } from "@/data/projectPosts";
+// import { PROJECT_POSTS } from "@/data/projectPosts";
+// app/projects/[slug]/page.tsx
+import { getProjectMeta } from '@/data/projects'
+import dynamic from 'next/dynamic'
 
 interface ProjectPageProps {
   // In modern Next.js, params is a Promise that resolves to the route parameters
@@ -12,12 +15,15 @@ export default async function DynamicProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   
   // Look up the slug inside our encapsulated data file
-  const post = PROJECT_POSTS[slug];
+  //const post = PROJECT_POSTS[slug];
+  const meta = getProjectMeta(slug);
 
   // If someone types an invalid slug (like /projects/fake-project), throw a 404
-  if (!post) { //Hopefully is secure enough to prevent XSS attacks ;-;
+  if (!meta) { //Hopefully is secure enough to prevent XSS attacks ;-;
     notFound();
   }
+
+  const PostContent = dynamic(() => import(`@/data/projects/${slug}.mdx`));
 
   return (
     <article className="py-12 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -29,12 +35,12 @@ export default async function DynamicProjectPage({ params }: ProjectPageProps) {
 
       {/* Meta Headers */}
       <header className="mt-6 mb-8 border-b border-border pb-6">
-        <span className="text-sm font-medium text-muted-foreground">Written on: {post.date}</span>
+        <span className="text-sm font-medium text-muted-foreground">Written on: {meta.date}</span>
         <h1 className="text-4xl font-bold tracking-tight mt-2 mb-4 text-foreground">
-          {post.title}
+          {meta.title}
         </h1>
         <div className="flex flex-wrap gap-2">
-          {post.techStack.map((tech) => (
+          {meta.techStack.map((tech) => (
             <span key={tech} className="text-xs font-mono bg-secondary text-secondary-foreground px-2.5 py-1 rounded-md">
               {tech}
             </span>
@@ -44,7 +50,7 @@ export default async function DynamicProjectPage({ params }: ProjectPageProps) {
 
       {/* The Actual Encapsulated Content Body */}
       <div className="prose dark:prose-invert max-w-none text-foreground leading-relaxed">
-        {post.content}
+        <PostContent/>
       </div>
 
     </article>

@@ -35,7 +35,7 @@ export default function Home() {
             I'm still figuring out my interests so hopefully this website gets across who I am and what I enjoy doing. I hope this site serves as a resource for anyone sharing similar passions to my own as well :).
           </p>
           <p className="text-md mt-3">
-            Feel free to reach out to me at <i>-------[at]----[dot]---</i> if you have any questions or would just like to talk!
+            Feel free to reach out to me at <i>jacejparks</i> [at]<i>gmail</i> [dot]<i>com</i> if you have any questions or would just like to talk!
           </p>
         </div>
       </div>

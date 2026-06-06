@@ -1,0 +1,94 @@
+---
+title: "Versatile"
+date: "June 6, 2026"
+techStack: ["C++", "ASM", "Linux", "PJAS - 1st Place"]
+---
+<u>Github Link</u>: <a href="https://github.com/Gameknight-Bit/PJAS2023-2024" target="_blank">Versatile</a>  
+<u>Project Presentation Download</u>: <a href="/projects/VersatilePJASPres.pdf" target="_blank">Versatile Presentation</a>
+
+# Overview
+
+&emsp;Versatile is a compiled programming language that I built my senior year of high school for a science competition.
+It is a direct compilation from the .vst file to <a href="https://www.nasm.us/" target="_blank">NASM</a> (a generic assembly language for x86) which is then 
+assembled and linked to create an executable that is portable across all x86 platforms. It features a simple syntax and implements 
+functions, variables, conditionals, scopes, and a variety of other operators that are defined in the grammar below.
+
+&emsp;Overall, the project was my first introduction to compiler design and assembly language. Also, it was my first
+experience working with modern C++ (using templates, arena allocators, smart pointers) and Linux development environments.
+
+# Versatile grammar:
+<Latex block math="\begin{align}
+[\text{Prog}] &\to [\text{Stmt}]^* \\
+[\text{Stmt}] &\to
+\begin{cases}
+\text{ret}([\text{Expr}]); \\
+\text{give}([\text{Expr}]); \\
+\text{var}\space\text{ident} = [\text{Expr}]; \\
+\text{ident} = \text{[Expr]}; \\
+\text{ident}([\text{Expr}]^*); \\
+\text{if} ([\text{Expr}])[\text{Scope}]\text{[IfPred]} \\
+\text{while} ([\text{Expr}])[\text{Scope}] \\
+\text{func}\space \text{ident}([\text{ident}]^*)[\text{Scope}]\\
+[\text{Scope}]
+\end{cases} \\
+
+[\text{Expr}] &\to
+\begin{cases}
+[\text{Term}] \\
+[\text{BinExpr}]
+\end{cases} \\
+
+[\text{BinExpr}] &\to
+\begin{cases}
+[\text{Expr}] * [\text{Expr}]  & \text{prec} = 1 \\
+[\text{Expr}] / [\text{Expr}]  & \text{prec} = 1 \\
+[\text{Expr}] + [\text{Expr}]  & \text{prec} = 0 \\
+[\text{Expr}] - [\text{Expr}]  & \text{prec} = 0 \\
+\\
+[\text{Expr}] == [\text{Expr}]  & \text{prec} = -1 \\
+[\text{Expr}] >= [\text{Expr}]  & \text{prec} = -1 \\
+[\text{Expr}] <= [\text{Expr}]  & \text{prec} = -1 \\
+[\text{Expr}] < [\text{Expr}]  & \text{prec} = -1 \\
+[\text{Expr}] > [\text{Expr}]  & \text{prec} = -1 \\
+\end{cases} \\
+
+[\text{Term}] &\to
+\begin{cases}
+\text{int\_lit} \\
+\text{ident} \\
+\text{ident}([\text{Expr}]^*); \\
+[\text{Expr}]
+\end{cases} \\
+
+[\text{Scope}] &\to [\text{Stmt}]^* \\
+
+[\text{IfPred}] &\to
+\begin{cases}
+\text{wif}([\text{Expr}])[\text{Scope}][\text{IfPred}] \\
+\text{else}[\text{Scope}] \\
+\epsilon
+\end{cases}
+
+\end{align}
+"/>
+
+# Project Design
+
+&emsp;Broken into 3 parts, the project consists of a tokenizer, a parser (that builds an AST depending on the grammar),
+and then a code generator that traverses the AST and emits NASM assembly code. The generator is the most interesting part of the project
+since it deals with 
+
+# Future Work
+
+&emsp;The project is currently in a state where it can compile simple programs that use the features described in the grammar, but there are a lot of features that I would like to add in the future
+if I have the time.
+
+&emsp;In general, I would love to add <b>more data types</b> than just positive integers. The worst part of implementing this is that the code generator currently only
+allows for 8 bytes of data (using the rax register and stack blocks of width 8) and doesn't have any memory management implemented (everything works on the stack). Thus implementing 
+memory management and a garbage collector would be the biggest hurdle.
+
+&emsp;Also adding better error handling could be nice to make the language more user friendly. For example, giving line numbers where the parser was expecting a token
+and such would be a nice addition.
+
+<b>Note that most of the code is not documented and not currently maintained at all so its purely used for 
+educational purposes! May rework the project at some point but no plans in the near future.</b>

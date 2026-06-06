@@ -1,7 +1,17 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // This tells Next.js to package all necessary dependencies into the .next folder
-  output: 'standalone', 
-};
+import createMDX from '@next/mdx'
+import type { NextConfig } from 'next'
 
-export default nextConfig;
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [['remark-frontmatter']],
+    rehypePlugins: [],
+  },
+})
+
+const nextConfig: NextConfig = {
+  output: 'standalone',
+  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+}
+
+export default withMDX(nextConfig)
