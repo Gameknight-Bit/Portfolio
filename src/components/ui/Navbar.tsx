@@ -7,7 +7,7 @@ const LINKS = [
   { href: "/projects", label: "Projects" },
   { href: "/research", label: "Research" },
   { href: "/paper-summaries", label: "Paper Summaries" },
-  { href: "/puzzles", label: "Puzzles" },
+  { href: "/blog", label: "Blog" },
   { href: "/music", label: "Music" },
 ];
 

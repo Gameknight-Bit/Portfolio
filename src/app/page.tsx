@@ -6,7 +6,7 @@ export default function Home() {
     <main className="min-h-screen flex-col py-15 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-in-out">
       <h1 className="text-4xl"><b>Jace</b> Parks</h1>
       <p className="mt-4 text-md pb-2">Current CS Student at <a href="https://www.cmu.edu/">Carnegie Mellon University</a></p>
-      <div className="flex flex-col md:flex-row gap-4 max-w-4xl">
+      <div className="flex flex-col md:flex-row gap-4">
         <div className="shrink-0">
           <Image 
             src="/JaceBos1_1.jpg"
@@ -18,7 +18,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="md:text-left">
+        <div className="text-left">
           <p className="text-md">
             Hello! My name is <b>Jace</b> and I am a current student at CMU pursuing a B.S. in Computer Science. 
           </p>
