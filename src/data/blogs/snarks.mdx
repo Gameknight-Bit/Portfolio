@@ -2,30 +2,64 @@
 title: "An Intro into SNARKs and Trusted Computing"
 date: "2026-06"
 category: "CS"
-summary: "A summary of SNARKs and TC from learning during my Summer 2026 Research Experiences."
+summary: "A summary of SNARKs and Trusted Computing from learning during my Summer 2026 Research Experience."
 tags: ["Cryptography", "CS Theory"]
 ---
 
-### Overview:
+## Overview:
 
-Imagine that you are a weak client that needs to run a heavy piece of code. The best option that you have is to outsource 
+&emsp;Imagine that you are a weak client that needs to run a heavy piece of code. The best option that you have is to outsource 
 that computation to another party (like Amazon Web Services). Now obviously you should be able to *trust* this party, but
 is there a way to ensure that the party is returning both a good result and that they actually ran the program that you
 sent? This is what a SNARK sets out to accomplish.
 
-Informally, a SNARK (succinct non-interactive argument of knowledge) is a witness that allows a verifier *(the client)*
+&emsp;Informally, a SNARK (succinct non-interactive argument of knowledge) is a witness that allows a verifier *(the client)*
 to verify that their code was run and has a correct output by the prover *(the server)* sublinear with respect to the 
-program runtime. Thus, when given a output and SNARK from a third party, the verifier can accept or reject the output based
+program work. Thus, when given a output and SNARK from a third party, the verifier can accept or reject the output based
 on the SNARK.
 
-A trivial solution to verification would just be to run the code on your own and verify that they gave the correct solution,
-but this isn't interesting in our use case, thus we constrain SNARKs to be sublinear wrt runtime.  <br /><br /><br />
+&emsp;A trivial solution to verification would just be to run the code on your own and verify that they gave the correct solution,
+but this isn't interesting in our use case, thus we constrain SNARKs to be sublinear with respect to the work of the computation.  
+<br />
 
 
-*Thus SNARKs allow for:*
-    - **Succinct:** Fast verification (sublinear wrt program runtime)
+*Thus SNARKs are:*
+    - **Succinct:** Allow for fast verification (sublinear w.r.t. program runtime/work)
     - **Non-interactive:** Only one message to transfer between prover and verifier
-    - **Argument of Knowledge:** Ensures that the prover has executed this program (with non-negl prob)
-
+    - **Give an Argument of Knowledge:** Ensures that the prover has executed this program (with non-negl prob)
+<br/>
 
 ## Formal Definition:
+&emsp;Given a fast but potentially malicious prover <Latex math="\mathcal{P}"/>, a slow but trusted verifier <Latex math="\mathcal{V}"/>, 
+a program <Latex math="\Psi"/>, and input to the program <Latex math="x"/>, <Latex math="\mathcal{V}"/> gives the 
+computation <Latex math="\Psi(x)"/> to <Latex math="\mathcal{P}"/> to compute and recieves output <Latex math="y"/> along with a proof 
+<Latex math="\pi"/> that convinces <Latex math="\mathcal{V}"/> that <Latex math="y = \Psi(x)"/> (with
+<HoverTooltip definition="A function $f(n)$ is non-negligible if $\exists c > 0$ s.t. $f(n) \geq \frac{1}{n^c}$ for all $n$.">non-negligible</HoverTooltip> probability).  <br />
+
+Specifically, a SNARK satisfies the following:  
+    1.) *Completeness*: <Latex math="y = \Psi(x) \implies"/> a honest <Latex math="\mathcal{P}"/> can convince <Latex math="\mathcal{V}"/>
+    with <HoverTooltip definition="A function $f(n)$ is non-negligible if $\exists c > 0$ s.t. $f(n) \geq \frac{1}{n^c}$ for all $n$.">non-negl</HoverTooltip> probability.  
+    2.) *Soundness*: <Latex math="y' \neq \Psi(x') \implies"/> a dishonest <Latex math="\mathcal{P}"/> cannot convince <Latex math="\mathcal{V}"/>
+    with <HoverTooltip definition="A function $f(n)$ is non-negligible if $\exists c > 0$ s.t. $f(n) \geq \frac{1}{n^c}$ for all $n$.">non-negl</HoverTooltip> probability.  
+    3.) *Succinctness*: <Latex math="\mathcal{V}"/>'s cost to verify <Latex math="\pi"/> is sublinear to the work required to compute <Latex math="\Psi(x)"/>
+<br/>
+
+&emsp;This is a nice idea and all, but how do SNARKs really work? They seem useful for verifiers, but if they take too long to construct by the prover or have huge
+proof sizes, then they may not be practical. It turns out that there is a large amount of research into making SNARKs quick for the prover to
+construct, verifier to verify, and small enough to be useful. Thus lots of tools have been released to work with SNARKs by researchers.  
+[insert more info on how SNARK constraint generation happens]
+
+
+## Looking to the Future:
+&emsp;SNARKs are just a small tip of what cryptographic proof systems have to offer. There is lots of research to extend of concepts like SNARKs
+and the field is still seeing lots of work done (with cryptocurrencies, trusted computing, and other topics).<br/><br/>
+
+Here are some papers and projects that I have found fairly interesting *regarding SNARK research*:<br/>
+<a href = "https://dl.acm.org/doi/10.1145/2090236.2090263">zk-SNARKs</a> are a form of SNARK that also ensure a property of zero-knowledge. So a <Latex math="\mathcal{P}"/> can convince <Latex math="\mathcal{V}"/>
+that it has successfully executed <Latex math="\Psi(x)"/> without giving away any knowledge of secret inputs to the computation.<br/>
+<a href = "https://starkware.co/wp-content/uploads/2022/05/STARK-paper.pdf">zk-STARKs</a> perform a similar task of a zk-SNARK but are also safe against
+post-quantum adversaries.<br/>
+<a href = "https://eprint.iacr.org/2025/172">Understanding zk-SNARKs</a> - A paper summarizing/reviewing how SNARKs have been integrated into real world systems.<br/>
+<a href = "https://github.com/a16z/jolt">Jolt</a> - A cool SNARK generation framework (zkVM) that is easy to set up and start generating proofs using constraints based around assembly instructions.<br/>
+<a href="https://eprint.iacr.org/2025/1849.pdf">CoBBl Dynamic Constraint Generation</a> - I worked on this project during Summer 2026 developing a Rust frontend for CoBBl! CoBBl breaks a program into basic
+blocks and performs optimizations on them in order to generate constraints between blocks and states of the program.
