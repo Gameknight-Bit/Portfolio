@@ -36,7 +36,7 @@ export default function BlogListingClient({ posts }: { posts: BlogPost[] }) {
           Blog stuffff
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl">
-          Writeups on stuff that I find intresting and other such things :)
+          Writeups on stuff that I find interesting among other such things :)
         </p>
       </div>
 

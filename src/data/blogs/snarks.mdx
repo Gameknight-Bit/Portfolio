@@ -1,0 +1,31 @@
+---
+title: "An Intro into SNARKs and Trusted Computing"
+date: "2026-06"
+category: "CS"
+summary: "A summary of SNARKs and TC from learning during my Summer 2026 Research Experiences."
+tags: ["Cryptography", "CS Theory"]
+---
+
+### Overview:
+
+Imagine that you are a weak client that needs to run a heavy piece of code. The best option that you have is to outsource 
+that computation to another party (like Amazon Web Services). Now obviously you should be able to *trust* this party, but
+is there a way to ensure that the party is returning both a good result and that they actually ran the program that you
+sent? This is what a SNARK sets out to accomplish.
+
+Informally, a SNARK (succinct non-interactive argument of knowledge) is a witness that allows a verifier *(the client)*
+to verify that their code was run and has a correct output by the prover *(the server)* sublinear with respect to the 
+program runtime. Thus, when given a output and SNARK from a third party, the verifier can accept or reject the output based
+on the SNARK.
+
+A trivial solution to verification would just be to run the code on your own and verify that they gave the correct solution,
+but this isn't interesting in our use case, thus we constrain SNARKs to be sublinear wrt runtime.  <br /><br /><br />
+
+
+*Thus SNARKs allow for:*
+    - **Succinct:** Fast verification (sublinear wrt program runtime)
+    - **Non-interactive:** Only one message to transfer between prover and verifier
+    - **Argument of Knowledge:** Ensures that the prover has executed this program (with non-negl prob)
+
+
+## Formal Definition:
