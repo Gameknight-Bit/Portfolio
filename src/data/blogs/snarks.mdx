@@ -22,7 +22,6 @@ on the SNARK.
 but this isn't interesting in our use case, thus we constrain SNARKs to be sublinear with respect to the work of the computation.  
 <br />
 
-
 *Thus SNARKs are:*
     - **Succinct:** Allow for fast verification (sublinear w.r.t. program runtime/work)
     - **Non-interactive:** Only one message to transfer between prover and verifier
@@ -32,13 +31,12 @@ but this isn't interesting in our use case, thus we constrain SNARKs to be subli
 ## Formal Definition:
 &emsp;Given a fast but potentially malicious prover <Latex math="\mathcal{P}"/>, a slow but trusted verifier <Latex math="\mathcal{V}"/>, 
 a program <Latex math="\Psi"/>, and input to the program <Latex math="x"/>, <Latex math="\mathcal{V}"/> gives the 
-computation <Latex math="\Psi(x)"/> to <Latex math="\mathcal{P}"/> to compute and recieves output <Latex math="y"/> along with a proof 
+computation <Latex math="\Psi(x)"/> to <Latex math="\mathcal{P}"/> to compute and receives output <Latex math="y"/> along with a proof 
 <Latex math="\pi"/> that convinces <Latex math="\mathcal{V}"/> that <Latex math="y = \Psi(x)"/> (with
 <HoverTooltip definition="A function $f(n)$ is non-negligible if $\exists c > 0$ s.t. $f(n) \geq \frac{1}{n^c}$ for all $n$.">non-negligible</HoverTooltip> probability).  <br />
 
 Specifically, a SNARK satisfies the following:  
-    1.) *Completeness*: <Latex math="y = \Psi(x) \implies"/> a honest <Latex math="\mathcal{P}"/> can convince <Latex math="\mathcal{V}"/>
-    with <HoverTooltip definition="A function $f(n)$ is non-negligible if $\exists c > 0$ s.t. $f(n) \geq \frac{1}{n^c}$ for all $n$.">non-negl</HoverTooltip> probability.  
+    1.) *Completeness*: <Latex math="y = \Psi(x) \implies"/> a honest <Latex math="\mathcal{P}"/> can convince <Latex math="\mathcal{V}"/>.  
     2.) *Soundness*: <Latex math="y' \neq \Psi(x') \implies"/> a dishonest <Latex math="\mathcal{P}"/> cannot convince <Latex math="\mathcal{V}"/>
     with <HoverTooltip definition="A function $f(n)$ is non-negligible if $\exists c > 0$ s.t. $f(n) \geq \frac{1}{n^c}$ for all $n$.">non-negl</HoverTooltip> probability.  
     3.) *Succinctness*: <Latex math="\mathcal{V}"/>'s cost to verify <Latex math="\pi"/> is sublinear to the work required to compute <Latex math="\Psi(x)"/>
@@ -47,19 +45,136 @@ Specifically, a SNARK satisfies the following:
 &emsp;This is a nice idea and all, but how do SNARKs really work? They seem useful for verifiers, but if they take too long to construct by the prover or have huge
 proof sizes, then they may not be practical. It turns out that there is a large amount of research into making SNARKs quick for the prover to
 construct, verifier to verify, and small enough to be useful. Thus lots of tools have been released to work with SNARKs by researchers.  
-[insert more info on how SNARK constraint generation happens]
 
+For now we will just go over the GKR protocol (which is only one approach of many to construct SNARKs).
+The protocol can be divided into **3** main steps:
+
+1.) *Arithmetization into Layered Circuits*  
+2.) *Sumcheck Protocol*  
+3.) *Polynomial Commitment*  
+
+## Circuit Arithmetization:
+&emsp;The first step of the GKR protocol is to arithmetize the program into a layered circuit. Essentially, it turns out that most programs
+can be represented by simple **arithmetic constraints**. To formalize this, let a **constraint set** be a set of rules applied to values of a set of variables.
+Also, **arithmetic constraints** only addition, multiplication, and equality are supported over a finite field modulo <Latex math="p"/>.
+
+&emsp;So when given a program <Latex math="\Psi(\vec{X}) = Y"/>, the compiler produces constraints <Latex math="\mathcal{C}(\vec{X}, Y, \vec{Z})"/> such that 
+<Latex math="Y \text{ is correct} \Longleftrightarrow \exists \vec{Z} \text{ that satisfies } \mathcal{C}"/>.
+We call these <Latex math="\vec{Z}"/> values, **witnesses**.
+
+&emsp;For instance, we may represent a program like <CodeSnippet inline code="Y = (X_0 + X_1) * (X_0 * X_1)"/> as:
+<Latex block math='\text{Constraints: } X_0, X_1, Y, Z_0, Z_1\\
+\begin{align*}Z_0 &= X_0 + X_1\\
+Z_1 &= X_0 * X_1\\
+Y &= Z_0 * Z_1\\
+\end{align*}\\
+\text{With a satisfying assignment being: }\\ X_0 = 1, X_1 = 2, Y = 6, Z_0 = 3, Z_1 = 2'/>
+&emsp;Note that loops, conditional branching, and assertions can also be represented this way!
+For example an if statement that may look something like:
+<CodeSnippet code={`if (a == b):
+    c = 1;
+else:
+    c = 2;`} />
+This turns into the following arithmatic constraints:
+<Latex block math='\begin{align*}
+0 &= Z * (a - b)\\
+0 &= Z * (c - 1)\\\\
+\end{align*} \text{ (For the \emph{if} branch)}\\
+\begin{align*}
+0 &= (1 - Z) * W * (a - b) \tag{constraint for $a \neq b$ with $W = (a-b)^{-1}$}\\
+0 &= (1 - Z) * (c - 2)
+\end{align*}'/>
+Where <Latex math="Z"/> is set by the prover to 1 or 0 depending on which branch is taken. Assertions and
+looping can be derived in a similar manner and are left as an exercise to the reader.
+
+&emsp;Memory accesses are somewhat tougher to handle, but treating them as a type of *consistency check* it is easier
+to represent. In general, we just extract all memory operations and check that for every LOAD from an address, that
+the value from the last address that was accessed is the same. Encoding a memory instruction as 
+4 elements of an Address, Value, Load/Store bit, and Timestamp gives us all the information in order to perform a consistency
+check in linear time using some <HoverTooltip definition='In particular, let $P_A(x) = \Pi_{i=1}^n(x - a_i)$ and note that for arrays $A$ and $B$ of length $n$ that 
+$A$ is a valid permutation of $B$ iff $P_A(x) \equiv P_B(x)$. So for a randomly generated $\gamma$ and two arrays $A$ and $B$, it can be shown that
+they are permutations with high probability iff $P_A(\gamma) \equiv P_B(\gamma)$. This can be accomplished with $n-1 \in O(n)$ multiplications.'> permutation checking algorithm.</HoverTooltip>
+
+&emsp;Now that we have a **correct** and **sound** way to arithmetize our program we need to make it cleaner in order to progress on the succinct requirement.
+This is accomplished with a layered circuit. There exists ways to make a "good" circuit that minimizes the depth <Latex math="d"/> by expanding the width with more gates.
+
+&emsp;For instance <Latex math="Y = ((X_0 + X_1) * X_2 + X_3) * X_5"/> has a depth of 5, but can be lessened to
+4 by using an extra constraint that the prover must add (which can continue to happen up to get logarithmic depth):
+<Latex block math='\begin{align*} Z = (X_0 + X_1) * X_2\\
+Y = (Z + X_3) * X_4
+\end{align*}'/>
+Now that we have minimal depth circuits, we use the **sumcheck protocol** to allow for quick verification of the layered circuit.
+
+## Sumcheck Protocol:
+In order to check that the circuit is **correct** <Latex math="\mathcal{V}"/> checks *inputs*, *outputs* (that should match the claim provided by the prover), and
+the *transitions* between each layer.
+The sumcheck protocol is utilized to speed up the transition check of each layer of the circuit. 
+
+To check that an arbitrary transition <Latex math="i+1 \to i"/> with width <Latex math="S"/>, input nodes <Latex math="V_{p_1}, V_{p_2}"/>, and output nodes <Latex math="W_q"/>
+holds we have:
+<Latex block math='
+\begin{align*}
+\forall q &\in 0,1,\cdots,S\\
+0 &= \sum_{p_1, p_2}f(p_1, p_2, q) \text{ where,}\\
+f(p_1, p_2, q) &= \text{add}_{p_1, p_2, q} \cdot (V_{p_1} + V_{p_2} - W_q) + 
+\text{mult}_{p_1, p_2, q} \cdot (V_{p_1} * V_{p_2} - W_q)
+\end{align*}'/>
+&emsp;In order to check that <Latex math="0 = \sum_{p_1, p_2}f(p_1, p_2, q)"/>, we can use <HoverTooltip definition='Goal: Verify $C = \sum_x g(x), x \in 0..N$.
+express $g(x)$ as polynomial $g`(b_1, \cdots, b_n)$ on bits of $x$ and instead now verify $C_0 = \sum_{b_1, \cdots, b_n \in \{0,1\}} g`(b_1, \cdots, b_n)$. This takes $n$ rounds
+to verify by having the prover provide claims $h_i(x) = \sum_{b_i,\cdots,b_n}g`(r_{i-1}, x, b_i, \cdots, b_n)$ for rounds $i \in 1..n$. For each claim, the verifier checks 
+$h_i(0) + h_i(1) = C_{i-1}$, samples random $r_i$, and computes $C_i = h_i(r_i)$ quickly. Then at $i=n$, $\mathcal{V}$ finally checks 
+$h_n(r_n) = g`(r_1, \cdots, r_n)$ '>sumcheck</HoverTooltip> to go through
+this in <Latex math="O(n = \log (N))"/> verifier time.
+
+&emsp;Ok great! This looks like a fast and efficient way to verify that an arithmatic layered circuit is correct if we use this approach <Latex math="d"/> times on each layer.
+However, this is still not succinct as the verifier (while only having to do <Latex math="d"/> layers, each verified in <Latex math="O(\log S)"/> time) still has to evaluate each layer's 
+input + witness where the size of the witness <Latex math="\approx"/> size of execution. Thus we need polynomial commitment to finally reach succinctness.
+
+## Polynomial Commitment:
+&emsp;Currently, we have an approach that turns correct arithmatic layered circuits into succinct checks and polynomial evaluation.
+However, opening a single point on layer <Latex math="d"/> is just as expensive as executing the program. Thus our final step is using a **polynomial commitment scheme**.
+
+&emsp;In short, our goal is to verify that <Latex math="y = f(r)"/> for some (prover given) polynomial <Latex math="f"/> s.t. for <Latex math="|f| = N"/>,
+the time it takes to verify <Latex math="y = f(r)"/> is sublinear to <Latex math="N"/>. So the process is have the prover commit to <Latex math="f"/> and send a 
+short commitment <Latex math="C"/> to the verifier that is then used to compute <Latex math="r"/> by running GKR with prover and send it back to the prover. After this the prover
+computes <Latex math="y = f(r)"/> and produces a short proof corresponding to <Latex math="f, C, r, \text{and }y"/>. Then the verifier can verify
+this with the commitment quickly and accept <Latex math="y"/> if it passes.
+
+&emsp;One great PCS-adjacent method that accomplishes the same goals is a <a href="https://en.wikipedia.org/wiki/Merkle_tree">Merkle Tree</a>. Specifically, this is called
+a **vector commitment scheme** but is very similar to a PCS. A Merkle Tree is defined as follows:
+
+&emsp;Let <Latex math="\text{hash: } \{0,1\}^{2k} \to \{0,1\}^k"/> be a collision-resistant hash function for some <Latex math="k"/>. Then our **goal** is that given an array
+<Latex math="A = [a_0, ..., a_{N-1}]"/> and arbitrary index <Latex math="r \in 0..N-1"/>, retrieve <Latex math="A[r] \text{ in } O(\log N)"/> time.
+We then define for each pair of adjacent array entries as an <Latex math="H"/> gate s.t. <Latex math="H(L, R) = \text{hash}(L||R)"/>. Then each hash produced by each gate is paired
+with the adjacent hash on its layer until there is only one hash <Latex math="T"/> at the top (resulting in a logarithmic depth hash tree). In order to commit, the prover sends <Latex math="T"/> to
+the verifier and the verifier gives back an arbitrary <Latex math="r \in 0..N-1"/> to find <Latex math="a_r"/>.
+
+&emsp;As for the prover, they need to help the verifier produce the path up the tree to re-derive <Latex math="T"/> starting from <Latex math="a_r"/>.
+Thus the prover provides <Latex math="O(\log N)"/> entries to have the verifier hash back up the tree and derive <Latex math="T"/>.
+
+&emsp;Thus, while the prover has to deal with <Latex math="O(N)"/> hashes (the commitment cost) and <Latex math="O(\log N)"/> values to provide entries to the verifier given an arbitrary <Latex math="r"/>,
+the verifier only has a commitment size of <Latex math="O(1)"/>, proof size of <Latex math="O(\log N)"/> entries, and a final verification size of <Latex math="O(\log N)"/> hashes. Thus we have achieved
+true succinctness for our SNARK generation/verification protocol!
+
+## Summary:
+&emsp;In short, the **GKR protocol** takes in a program <Latex math="\Psi"/> and produces an arithmatic layered circuit with minimal depth, verifies the circuit
+using the sumcheck protocol to produce a fast polynomial evaluation of the circuit, and then finally uses a polynomial (or vector) commitment scheme to avoid
+the verifier having to open the entire program circuit by itself, producing a small proof (the SNARK) to go along with the output of the program.
 
 ## Looking to the Future:
 &emsp;SNARKs are just a small tip of what cryptographic proof systems have to offer. There is lots of research to extend of concepts like SNARKs
 and the field is still seeing lots of work done (with cryptocurrencies, trusted computing, and other topics).<br/><br/>
 
 Here are some papers and projects that I have found fairly interesting *regarding SNARK research*:<br/>
-<a href = "https://dl.acm.org/doi/10.1145/2090236.2090263">zk-SNARKs</a> are a form of SNARK that also ensure a property of zero-knowledge. So a <Latex math="\mathcal{P}"/> can convince <Latex math="\mathcal{V}"/>
+&emsp;<a href = "https://dl.acm.org/doi/10.1145/2090236.2090263">zk-SNARKs</a> are a form of SNARK that also ensure a property of zero-knowledge. So a <Latex math="\mathcal{P}"/> can convince <Latex math="\mathcal{V}"/>
 that it has successfully executed <Latex math="\Psi(x)"/> without giving away any knowledge of secret inputs to the computation.<br/>
-<a href = "https://starkware.co/wp-content/uploads/2022/05/STARK-paper.pdf">zk-STARKs</a> perform a similar task of a zk-SNARK but are also safe against
+&emsp;<a href = "https://starkware.co/wp-content/uploads/2022/05/STARK-paper.pdf">zk-STARKs</a> perform a similar task of a zk-SNARK but are also safe against
 post-quantum adversaries.<br/>
-<a href = "https://eprint.iacr.org/2025/172">Understanding zk-SNARKs</a> - A paper summarizing/reviewing how SNARKs have been integrated into real world systems.<br/>
-<a href = "https://github.com/a16z/jolt">Jolt</a> - A cool SNARK generation framework (zkVM) that is easy to set up and start generating proofs using constraints based around assembly instructions.<br/>
-<a href="https://eprint.iacr.org/2025/1849.pdf">CoBBl Dynamic Constraint Generation</a> - I worked on this project during Summer 2026 developing a Rust frontend for CoBBl! CoBBl breaks a program into basic
-blocks and performs optimizations on them in order to generate constraints between blocks and states of the program.
+&emsp;<a href = "https://eprint.iacr.org/2025/172">Understanding zk-SNARKs</a> - A paper summarizing/reviewing how SNARKs have been integrated into real world systems.<br/>
+&emsp;<a href = "https://github.com/a16z/jolt">Jolt</a> - A cool SNARK generation framework (zkVM) that is easy to set up and start generating proofs using constraints based around assembly instructions.<br/>
+&emsp;<a href="https://eprint.iacr.org/2025/1849.pdf">CoBBl Dynamic Constraint Generation</a> - I worked on this project during Summer 2026 developing a Rust frontend for CoBBl! CoBBl breaks a program into basic
+blocks and performs optimizations on them in order to generate constraints between blocks and states of the program (which turns out to be very fast and decreases prover times across an array of benchmarks).
+
+## Acknowledgements:
+&emsp;A great deal of the explanations and understanding that I have with this topic comes from a lecture from <a href="https://jiangkm3.github.io/">Benny</a> for the class Introduction to Computer Security (15/18-330).
+Much of the examples in this post come from his slides :)

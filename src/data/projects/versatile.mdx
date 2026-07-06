@@ -6,7 +6,7 @@ techStack: ["C++", "ASM", "Linux", "PJAS - 1st Place"]
 <u>Github Link</u>: <a href="https://github.com/Gameknight-Bit/PJAS2023-2024" target="_blank">Versatile</a>  
 <u>Project Presentation Download</u>: <a href="/projects/VersatilePJASPres.pdf" target="_blank">Versatile Presentation</a>
 
-# Overview
+## Overview
 
 &emsp;Versatile is a compiled programming language that I built my senior year of high school for a science competition.
 It is a direct compilation from the .vst file to <a href="https://www.nasm.us/" target="_blank">NASM</a> (a generic assembly language for x86) which is then 
@@ -16,7 +16,7 @@ functions, variables, conditionals, scopes, and a variety of other operators tha
 &emsp;Overall, the project was my first introduction to compiler design and assembly language. Also, it was my first
 experience working with modern C++ (using templates, arena allocators, smart pointers) and Linux development environments.
 
-# Versatile grammar:
+## Versatile grammar:
 <Latex block math="\begin{align}
 [\text{Prog}] &\to [\text{Stmt}]^* \\
 [\text{Stmt}] &\to
@@ -72,13 +72,13 @@ experience working with modern C++ (using templates, arena allocators, smart poi
 \end{align}
 "/>
 
-# Project Design
+## Project Design
 
 &emsp;Broken into 3 parts, the project consists of a tokenizer, a parser (that builds an AST depending on the grammar),
 and then a code generator that traverses the AST and emits NASM assembly code. The generator is the most interesting part of the project
 since it deals with 
 
-# Future Work
+## Future Work
 
 &emsp;The project is currently in a state where it can compile simple programs that use the features described in the grammar, but there are a lot of features that I would like to add in the future
 if I have the time.

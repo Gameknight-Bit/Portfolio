@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
+        "arithmatic",
+        "Arithmetization",
+        "arithmetize",
         "Codeforces",
         "cryptoschemes",
         "Cryptosystems",
@@ -9,14 +12,19 @@
         "httpness",
         "Jace",
         "jacejparks",
+        "katex",
+        "mathcal",
         "merkle",
+        "mult",
         "NASM",
+        "negl",
         "PJAS",
         "Riad",
         "SNES",
         "STUCO",
         "stuffff",
         "sublinear",
+        "Sumcheck",
         "Wahby",
         "Writeups"
     ]

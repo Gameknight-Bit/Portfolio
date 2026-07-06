@@ -135,4 +135,8 @@
   p {
     @apply font-light;
   }
+
+  h2 {
+    @apply text-xl mt-2;
+  }
 }

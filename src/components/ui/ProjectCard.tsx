@@ -39,9 +39,9 @@ export default function ProjectCard({
       <div className="p-6 flex flex-col grow">
         
         <div className="flex justify-between items-start gap-4 mb-3">
-          <h2 className="text-xl font-bold group-hover:text-primary transition-colors">
+          <h1 className="text-xl font-bold group-hover:text-primary transition-colors">
             {title}
-          </h2>
+          </h1>
           <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md shrink-0">
             {duration}
           </span>

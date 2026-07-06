@@ -2,12 +2,14 @@
 import type { MDXComponents } from 'mdx/types'
 import Latex from '@/components/ui/Latex'
 import HoverTooltip from '@/components/ui/HoverTooltip'
+import CodeSnippet from '@/components/ui/CodeSnippet'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
     // This makes <Latex /> available in all MDX files without importing it each time
     Latex,
-    HoverTooltip
+    HoverTooltip,
+    CodeSnippet
   }
 }
