@@ -1,0 +1,89 @@
+---
+title: "Average Case Hardness Assumptions"
+date: "2026-08"
+category: "CS"
+summary: "A Summary of Average Case Hardness using the DistNP Complexity Class."
+tags: ["Cryptography", "CS Theory", "Complexity Theory"]
+---
+
+## Preface/Introduction:
+&emsp;After taking <a href="https://www.cs251.com/">Great Ideas in Computer Science (15-251)</a> I remember being enamoured by
+all of the fascinating new topics that we learned of. From turing machines, undecidability, discrete finite automata (DFAs),
+and quantum computing (from my goat Ryan O'Donnel), I thoroughly enjoyed pretty much every topic. But one topic stood out 
+to me more than the others, and that was <Latex math="P \text{ vs. } NP"/>.
+
+&emsp;The concept that some family of problems were easy to verify and (conjectured to be) hard to solve was pretty interesting.
+And the fact that polynomial time reductions could expand these classes of problems seemed very useful. 
+With this I was also becoming increasingly interested different cryptographic algorithms while TAing and learning about cryptography
+in these Theoretical CS Classes [see my <a href="/projects/pqc"> Quantum Cryptography Project :)</a>]
+
+&emsp;In the past, It really bothered me that when learning popular cryptography algorithms (RSA, Diffie-Hellman, etc.), that they were based
+on problems (like <a href="https://en.wikipedia.org/wiki/Shor%27s_algorithm">integer factorization</a> and 
+<a href="https://en.wikipedia.org/wiki/Shor%27s_algorithm#Shor's_algorithm_for_discrete_logarithms">discrete-log</a>) 
+that were "easy" for quantum computers to break. While practical 
+quantum computers are distant, it still bugged me. Thus looking for NP-hardness assumptions seemed to me the best way
+to ensure that quantum computers wouldn't crack future encrypted messages easily, as a firm <Latex math="P \neq NP"/> believer.
+
+## Misconceptions:
+&emsp;During my individual thoughts about NP-hard encryption schemes I incorrectly assumed that using any NP-hard problem as 
+a cryptographic primitive would be sufficient. I forgot that NP-hard problems are only hard in their "worst-case" (which we
+will define in the next section). In order to encrypt some value, I would need to encode the value into some hard problem
+and still preserve the hardness of that problem with some high probability.
+
+&emsp;For example, one thought I had at the start was that if you could generate a k-Clique in a way that encodes a bit (by having 
+the graph in k-Clique if b=1 and not in k-Clique if b=0) such that the decrypter knows some secret about how the graph was generated
+so they can efficiently check k-Clique while an adversary couldn't check efficiently (due to it being NP-hard in my mind). However,
+this doesn't address the fact that degenerate cases that are easy to solve can be generated or even how a secret would be stored.
+
+&emsp;Thus we need a notion of how hard problems are to solve when randomly generated from a probability distribution, and perhaps
+a class of problems that may be useful for cryptographic primitives.
+
+## Definitions:
+
+- **(Def 1) Complexity Classes:**
+Let <Latex math="L \subseteq \Sigma^*"/> be a language and <Latex math="\Sigma"/> be an alphabet. We say that for any complexity 
+class <Latex math="\mathcal{C}"/>, <Latex math="L"/> is <Latex math="\mathcal{C}"/>-Hard iff every language <Latex math="H"/> in 
+<Latex math="\mathcal{C}"/> can be <HoverTooltip definition="There exists a polynomial-runtime algo ($f$) mapping $s\in H$ to $f(s) \in L$ ($f: H \to L$). 
+[A karp reduction in particular]">
+reduced to <Latex math="L"/> </HoverTooltip>. 
+
+- **(Def 2) The Class DistNP:**
+Consider the following class of languages <Latex math="DistNP = \{(L, \mathcal{D}) \mid L \in NP, \mathcal{D} \in PSamp\}"/> 
+where <Latex math="PSamp"/> is a poly-time sampleable <HoverTooltip definition="Probability Density Function">pdf</HoverTooltip>.
+We call elements in <Latex math="DistNP"/> and <Latex math="AvgP"/> "distributional problems".
+
+- **(Def 3) Reductions for DistNP:**
+We say that a distributional problem <Latex math="\langle L_1, \mu_1 \rangle"/> reduces to <Latex math="\langle L_2, \mu_2 \rangle"/> iif
+there exists a poly-time function <Latex math="f"/> such that:
+
+    * 1.) **<Latex math="f"/> is a valid reduction:** <Latex math="x \in L_1 \Longleftrightarrow f(x) \in L_2"/> 
+    * 2.) **<Latex math="f(\mu_1)"/> dominates <Latex math="\mu_2"/>:** For every <Latex math="n"/> and <Latex math="m"/>, and for 
+    every  <Latex math="y \in \Sigma^*"/>:
+    <Latex block math="\Sigma_{x:f(x)=y}\mu'_{1,n}(x) \leq \text{poly}(n)\mu'_{2,m}(y)"/>
+
+- **(Def 4) Polynomial Time on Average:**
+Suppose we have an algorithm for a distributional problem <Latex math="\langle L, \mu\rangle"/> that
+runs in time <Latex math="t(x)"/> on input <Latex math="x"/>. We say that algorithm has poly runtime
+on average if there are constants <Latex math="\delta > 0"/> and <Latex math="c"/> such that:
+<Latex block math="\mathbb{E}_{x \sim \mu_n} \left[t(x)^\delta\right]  \leq O(n^c)"/>.
+
+- **(Def 5) The Class AvgP:**
+We say a distributional problem <Latex math="\langle L, \mu \rangle \in AvgP"/> if there exists an 
+algorithm <Latex math="A"/> that decides <Latex math="L"/> correctly on all inputs, and 
+whose runtime <Latex math="t(x)"/> is polynomial on average with respect to <Latex math="\mu"/>, in the sense of 
+(Def 4). Intuitively, <Latex math="AvgP"/> is the average-case analogue of <Latex math="P"/>: that a random instance 
+(drawn from <Latex math="\mu"/>) is easy with overwhelming probability.
+
+- **(Def 6) DistNP-Completeness:**
+A distributional problem <Latex math="\langle L, \mu \rangle \in DistNP"/> is <Latex math="DistNP"/>-complete if 
+every <Latex math="\langle L', \mu' \rangle \in DistNP"/> reduces to it in the sense of (Def 3). This is the 
+distributional analogue of NP-completeness: if we can show <Latex math="DistNP"/>-complete problems exist, then showing 
+even one of them is in <Latex math="AvgP"/> would collapse <Latex math="DistNP \subseteq AvgP"/> entirely 
+every distributional problem in NP, under every polynomial-time sampleable distribution, would suddenly be easy on average
+
+
+**WIP**
+
+## References 
+
+https://lucatrevisan.github.io/cs278-08/lecture23.pdf
